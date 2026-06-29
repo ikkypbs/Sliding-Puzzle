@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="id">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,18 +18,18 @@
       <div class="brand">PUZZLE·CAM <small>hand-frame capture</small></div>
       <div class="status-pill">
         <span id="statusDot" class="status-dot"></span>
-        <span id="statusText">iniciando cámara…</span>
+        <span id="statusText">memulai kamera…</span>
       </div>
     </div>
 
     <div id="progressBadge" class="progress-badge">
-      <span id="progressText">0 / 9 piezas colocadas</span>
+      <span id="progressText">0 / 9 kepingan terpasang</span>
     </div>
 
     <div id="loadingOverlay">
-      <div class="loader-text" id="loaderText">cargando modelo HandLandmarker…</div>
+      <div class="loader-text" id="loaderText">memuat model HandLandmarker…</div>
       <div class="loader-bar"></div>
-      <button type="button" id="loaderRetry" class="loader-retry hidden">reintentar</button>
+      <button type="button" id="loaderRetry" class="loader-retry hidden">coba lagi</button>
     </div>
 
     <div id="errorBanner"></div>
@@ -37,23 +37,23 @@
 
   <aside id="gallery">
     <div class="gallery-head">
-      <span class="gallery-title">Tira</span>
+      <span class="gallery-title">Galeri</span>
       <span class="gallery-count" id="galleryCount">0 / 3</span>
     </div>
 
     <div class="strip-complete-msg" id="stripCompleteMsg">
-      tira completa — descarga o reinicia para seguir
+      galeri penuh — unduh atau reset untuk lanjut
     </div>
 
     <div id="galleryStrip" class="gallery-strip">
       <div class="gallery-empty" id="galleryEmpty">
-        Tus rompecabezas completados<br/>aparecerán aquí.
+        Puzzle yang sudah kamu selesaikan<br/>akan muncul di sini.
       </div>
     </div>
 
     <div class="gallery-actions">
-      <button type="button" id="downloadStripBtn" class="gallery-action-btn" disabled>descargar tira</button>
-      <button type="button" id="resetAllBtn" class="gallery-action-btn gallery-action-btn--danger">reiniciar todo</button>
+      <button type="button" id="downloadStripBtn" class="gallery-action-btn" disabled>unduh foto</button>
+      <button type="button" id="resetAllBtn" class="gallery-action-btn gallery-action-btn--danger">ulang semua</button>
     </div>
   </aside>
 
