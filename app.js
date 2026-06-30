@@ -151,7 +151,8 @@ function downloadPhotoStrip() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `puzzlecam_tira_${Date.now()}.png`;
+    // Mengubah penamaan file unduhan agar default ID
+    link.download = `puzzlecam_galeri_${Date.now()}.png`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -170,7 +171,7 @@ function resetEverything() {
   hideStripComplete();
   updateStripDownloadAvailability();
   resetPuzzleOnly();
-  statusText.textContent = "todo reiniciado";
+  statusText.textContent = "semua direset";
 }
 
 function renderGalleryThumb(snapshotCanvas, index) {
@@ -235,7 +236,7 @@ window.addEventListener("resize", fitCanvasToWindow);
 
 async function initWebcam() {
   if (!navigator.mediaDevices?.getUserMedia) {
-    throw new Error("Este navegador no soporta getUserMedia.");
+    throw new Error("Peramban ini tidak mendukung akses kamera (getUserMedia).");
   }
   const stream = await navigator.mediaDevices.getUserMedia({
     video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" },
@@ -271,7 +272,7 @@ async function initHandLandmarker() {
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
       ),
       LOAD_TIMEOUT_MS,
-      "Tiempo de espera agotado cargando el runtime de MediaPipe (WASM). Revisa tu conexión a internet o si cdn.jsdelivr.net está bloqueado."
+      "Waktu tunggu habis saat memuat runtime MediaPipe (WASM). Periksa koneksi internet Anda atau pastikan cdn.jsdelivr.net tidak diblokir."
     );
   } catch (err) {
     throw err;
@@ -292,11 +293,11 @@ async function initHandLandmarker() {
         minTrackingConfidence: 0.6,
       }),
       LOAD_TIMEOUT_MS,
-      "Tiempo de espera agotado descargando el modelo HandLandmarker (~10MB) con GPU."
+      "Waktu tunggu habis saat mengunduh model HandLandmarker (~10MB) menggunakan GPU."
     );
     return handLandmarker;
   } catch (gpuErr) {
-    console.warn("[PuzzleCam] Falló con delegate GPU, reintentando con CPU…", gpuErr);
+    console.warn("[PuzzleCam] Gagal menggunakan delegasi GPU, mencoba kembali dengan CPU…", gpuErr);
   }
 
   try {
@@ -314,7 +315,7 @@ async function initHandLandmarker() {
         minTrackingConfidence: 0.6,
       }),
       LOAD_TIMEOUT_MS,
-      "Tiempo de espera agotado descargando el modelo HandLandmarker (~10MB) incluso con CPU. Revisa tu conexión o si storage.googleapis.com está bloqueado en tu red."
+      "Waktu tunggu habis saat mengunduh model HandLandmarker (~10MB) menggunakan CPU. Periksa koneksi Anda atau pastikan storage.googleapis.com tidak diblokir."
     );
     return handLandmarker;
   } catch (cpuErr) {
@@ -419,7 +420,7 @@ function drawCountdownOverlay(box) {
   ctx.fillText(String(n), cx, cy);
   ctx.restore();
 
-  statusText.textContent = `capturando en ${n}…`;
+  statusText.textContent = `mengambil gambar dalam ${n}…`;
 }
 
 function gaussianNoise(std) {
@@ -759,11 +760,12 @@ function drawBoardAndPieces() {
     ctx.save();
     ctx.fillStyle = "rgba(95,174,110,0.15)";
     ctx.fillRect(box.x, box.y, box.width, box.height);
-    ctx.font = `${Math.max(20, box.width * 0.07)}px 'IBM Plex Mono', monospace`;
+    ctx.font = `${Math.max(20, box.width * 0.05)}px 'IBM Plex Mono', monospace`;
     ctx.fillStyle = "#5fae6e";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("¡COMPLETO! — puño para guardar", box.x + box.width / 2, box.y + box.height / 2);
+    // MENGUBAH TEKS SELESAI DI LAYAR UTAMA
+    ctx.fillText("PUZZLE SELESAI! — kepal tangan untuk simpan", box.x + box.width / 2, box.y + box.height / 2);
     ctx.restore();
   }
 }
@@ -774,7 +776,8 @@ function updateProgressBadge() {
     return;
   }
   const placedCount = puzzle.pieces.filter((p) => p.placed).length;
-  progressText.textContent = `${placedCount} / ${puzzle.pieces.length} piezas colocadas`;
+  // MENGUBAH INDIKATOR PROGRES SAMPING
+  progressText.textContent = `${placedCount} / ${puzzle.pieces.length} kepingan terpasang`;
   progressBadge.classList.add("visible");
   progressBadge.classList.toggle("solved", puzzle.solved);
 }
@@ -964,7 +967,8 @@ function finishShatter() {
   shatter.fragments = [];
   if (shatter.pendingCanvas) {
     addToGallery(shatter.pendingCanvas);
-    statusText.textContent = "¡guardado en la tira!";
+    // MENGUBAH TEKS BERHASIL DISIMPAN DI STATUS BAR
+    statusText.textContent = "berhasil disimpan ke galeri!";
     shatter.pendingCanvas = null;
   }
   resetPuzzleOnly();
@@ -972,7 +976,7 @@ function finishShatter() {
 
 function handleFistReset() {
   if (appState !== "puzzle") {
-    statusText.textContent = "reiniciado (puño)";
+    statusText.textContent = "direset (kepal tangan)";
     resetPuzzleOnly();
     return;
   }
@@ -984,7 +988,7 @@ function handleFistReset() {
     shatter.pendingCanvas = puzzle.fullPhotoboothCanvas;
     startShatter(puzzle.fullPhotoboothCanvas, puzzle.boardBox);
   } else {
-    statusText.textContent = "reiniciado (puño)";
+    statusText.textContent = "direset (kepal tangan)";
     resetPuzzleOnly();
   }
 }
@@ -995,7 +999,7 @@ let fistHoldCounter = 0;
 function processResults(result) {
   if (appState === "shattering") {
     updateAndDrawShatter();
-    statusText.textContent = "guardando…";
+    statusText.textContent = "menyimpan…";
     return;
   }
 
@@ -1018,8 +1022,8 @@ function processResults(result) {
         drawLiveFrameOverlay(lastSeenFrame.box);
       }
       statusText.textContent = isStripFull()
-        ? "tira completa — descarga o reinicia"
-        : "buscando manos…";
+        ? "galeri penuh — unduh atau reset untuk lanjut"
+        : "mencari tangan…";
       return;
     }
 
@@ -1033,8 +1037,8 @@ function processResults(result) {
       updateProgressBadge();
       drawBoardAndPieces();
       statusText.textContent = puzzle.solved
-        ? "¡rompecabezas completo! cierra el puño para guardarlo"
-        : "arma el rompecabezas con pinch";
+        ? "puzzle selesai! kepalkan tangan untuk menyimpan"
+        : "susun puzzle menggunakan gestur pinch";
       return;
     }
 
@@ -1058,7 +1062,7 @@ function processResults(result) {
 
   if (appState === "tracking") {
     if (isStripFull()) {
-      statusText.textContent = "tira completa — descarga o reinicia";
+      statusText.textContent = "galeri penuh — unduh atau reset untuk lanjut";
       return;
     }
     if (handsLandmarks.length === 2) {
@@ -1081,7 +1085,7 @@ function processResults(result) {
           freezeGate.since = performance.now();
         }
         statusDot.className = "status-dot armed";
-        statusText.textContent = "sostén el pinch…";
+        statusText.textContent = "tahan gestur pinch…";
 
         if (performance.now() - freezeGate.since > FREEZE_HOLD_MS) {
           freezeGate.holding = false;
@@ -1089,7 +1093,7 @@ function processResults(result) {
         }
       } else {
         freezeGate.holding = false;
-        statusText.textContent = "manos en seguimiento";
+        statusText.textContent = "tangan terdeteksi";
       }
     } else {
       freezeGate.holding = false;
@@ -1097,9 +1101,9 @@ function processResults(result) {
       if (lastSeenFrame.box && sinceLastSeen < FRAME_GRACE_MS) {
         applyBWInsideBox(lastSeenFrame.box);
         drawLiveFrameOverlay(lastSeenFrame.box);
-        statusText.textContent = "manos en seguimiento";
+        statusText.textContent = "tangan terdeteksi";
       } else {
-        statusText.textContent = "manos en seguimiento";
+        statusText.textContent = "tangan terdeteksi";
       }
     }
     return;
@@ -1134,9 +1138,9 @@ function processResults(result) {
 
     statusText.textContent = puzzle.solved
       ? (fistHoldCounter > 0
-          ? `guardando… sostén el puño (${fistHoldCounter}/${FIST_HOLD_FRAMES})`
-          : "¡rompecabezas completo! cierra el puño para guardarlo")
-      : "arma el rompecabezas con pinch";
+          ? `menyimpan… tahan kepalan tangan (${fistHoldCounter}/${FIST_HOLD_FRAMES})`
+          : "puzzle selesai! kepalkan tangan untuk menyimpan")
+      : "susun puzzle menggunakan gestur pinch";
   }
 }
 
@@ -1164,7 +1168,7 @@ function showLoaderError(message) {
 function resetLoaderUI() {
   loadingOverlay.classList.remove("hidden");
   loaderText.style.color = "";
-  loaderText.textContent = "cargando modelo HandLandmarker…";
+  loaderText.textContent = "memuat model HandLandmarker…";
   loaderRetry.classList.add("hidden");
   errorBanner.style.display = "none";
 }
@@ -1176,7 +1180,7 @@ async function boot() {
   const watchdogMs = (LOAD_TIMEOUT_MS * 2) + 5000;
   const watchdog = setTimeout(() => {
     if (!settled) {
-      showLoaderError("La carga está tardando demasiado. Pulsa reintentar o revisa tu conexión.");
+      showLoaderError("Proses pemuatan memakan waktu terlalu lama. Klik coba lagi atau periksa koneksi Anda.");
     }
   }, watchdogMs);
 
@@ -1190,17 +1194,17 @@ async function boot() {
     settled = true;
     clearTimeout(watchdog);
     loadingOverlay.classList.add("hidden");
-    statusText.textContent = "listo";
+    statusText.textContent = "siap";
     requestAnimationFrame(renderLoop);
   } catch (err) {
     settled = true;
     clearTimeout(watchdog);
     if (err && err.name === "NotAllowedError") {
-      showLoaderError("Permiso de cámara denegado. Habilítalo en la configuración del navegador y pulsa reintentar.");
+      showLoaderError("Izin kamera ditolak. Aktifkan pada pengaturan peramban lalu klik coba lagi.");
     } else if (err && err.name === "NotFoundError") {
-      showLoaderError("No se encontró ninguna webcam disponible.");
+      showLoaderError("Tidak ada kamera web yang ditemukan.");
     } else {
-      showLoaderError((err && err.message) || "Error iniciando la app.");
+      showLoaderError((err && err.message) || "Gagal memulai aplikasi.");
     }
   }
 }
@@ -1216,8 +1220,9 @@ if (downloadStripBtn) {
 
 if (resetAllBtn) {
   resetAllBtn.addEventListener("click", () => {
+    // MENGUBAH TEKS POP-UP KONFIRMASI RESET
     const confirmed = window.confirm(
-      "¿Seguro que quieres borrar toda la tira de fotos y empezar de nuevo?"
+      "Apakah Anda yakin ingin menghapus semua foto di galeri dan mengulang dari awal?"
     );
     if (confirmed) resetEverything();
   });
